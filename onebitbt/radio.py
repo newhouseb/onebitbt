@@ -106,9 +106,4 @@ class BLERadio(Elaboratable):
 
 if __name__ == '__main__':
     with hardware.use(sys.argv[1]) as platform:
-        from nmigen.build import Resource, Pins, Attrs
-        platform.resources += [
-                Resource('debug1', 0, Pins("M16", dir="o"), Attrs(IOSTANDARD="LVCMOS33")),
-                Resource('debug2', 0, Pins("M17", dir="o"), Attrs(IOSTANDARD="LVCMOS33")),
-        ]
         platform().build(BLERadio(), do_program=True)
