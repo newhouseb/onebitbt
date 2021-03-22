@@ -31,18 +31,15 @@ class BLERadio(Elaboratable):
         # Set up a UART and a printer (and directly connectt the printer to the UART)
         m.submodules.uart = uart = self.uart
         m.submodules.printer = printer = TextMemoryPrinter(Memory(width=8, depth=32), 32)
+        m.d.comb += [
+            uart.tx_data.eq(printer.tx_data),
+            uart.tx_rdy.eq(printer.tx_rdy),
+            printer.tx_ack.eq(uart.tx_ack),
+        ]
         if platform:
             m.d.comb += [
                 platform.request('uart_tx').eq(uart.tx_o),
                 uart.rx_i.eq(platform.request('uart_rx')),
-            ]
-
-        debug = False
-        if not debug:
-            m.d.comb += [
-                uart.tx_data.eq(printer.tx_data),
-                uart.tx_rdy.eq(printer.tx_rdy),
-                printer.tx_ack.eq(uart.tx_ack),
             ]
 
         # Set up a clock divider on the RX clock because we can't do everything at 250MHz
@@ -104,37 +101,6 @@ class BLERadio(Elaboratable):
             parser.bitstream.eq(baseband),
             synchronizer.reset.eq(parser.done)
         ]
-
-        if debug:
-            toggler = Toggler()
-            width = 1
-
-            analyzer = Memory(width=width, depth=1024)
-            m.submodules.wport = wport = analyzer.write_port(domain="rxdiv4")
-
-            analyzer_in = Signal(width)
-            analyzer_idx = Signal(range(1024))
-            m.d.rxdiv4 += [
-                analyzer_idx.eq(analyzer_idx + 1),
-                analyzer_in.eq(basebandFast),
-            ]
-            m.d.comb += [
-                wport.addr.eq(analyzer_idx),
-                wport.data.eq(analyzer_in),
-                wport.en.eq(toggler.output)
-            ]
-
-            m.submodules.commander = Commander(uart, {
-                '1': toggler,
-                '2': BinarySignalPrinter(serdes.rx_data),
-                '3': BinaryMemoryPrinter(analyzer, width, 1024),
-            })
-            if platform:
-                m.d.comb += [
-                    platform.request('led').eq(toggler.output),
-                    platform.request('debug1').eq(baseband),
-                    platform.request('debug2').eq(synchronizer.matcher.match)
-                ]
 
         return m
 
