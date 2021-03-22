@@ -37,7 +37,7 @@ class BLERadio(Elaboratable):
                 uart.rx_i.eq(platform.request('uart_rx')),
             ]
 
-        debug = True
+        debug = False
         if not debug:
             m.d.comb += [
                 uart.tx_data.eq(printer.tx_data),
@@ -75,15 +75,15 @@ class BLERadio(Elaboratable):
         m.submodules.lowMag = lowMag = MagnitudeApproximator()
         m.d.comb += [
             highMag.inputI.eq(lpfHighI.output),
-            highMag.inputI.eq(lpfHighQ.output),
+            highMag.inputQ.eq(lpfHighQ.output),
             lowMag.inputI.eq(lpfLowI.output),
             lowMag.inputQ.eq(lpfLowQ.output),
         ]
 
         # Finally, compare the two magnitudes
         # (We need to pipeline this a bit to meet timing)
-        lowMagOut = Signal()
-        highMagOut = Signal()
+        lowMagOut = Signal(32)
+        highMagOut = Signal(32)
         basebandFast = Signal()
         baseband = Signal()
         m.d.rxdiv4 += [
