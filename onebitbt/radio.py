@@ -19,35 +19,6 @@ from serialcommander.commander import Commander
 from serialcommander.printer import TextMemoryPrinter, BinarySignalPrinter, BinaryMemoryPrinter
 from serialcommander.toggler import Toggler
 
-class SimpleDecimator(Elaboratable):
-    def __init__(self, decimation_factor=None, max_val=20, domain="sync"):
-        self.decimation_factor = decimation_factor
-        self.domain = domain
-
-        self.input = Signal(signed(14))
-        self.output = Signal(signed(20))
-
-        self.running_sum = Signal(signed(20))
-        self.counter = Signal(signed(8))
-
-    def elaborate(self, platform):
-        m = Module()
-
-        domain = getattr(m.d, self.domain)
-        with m.If(self.counter == self.decimation_factor - 1):
-            domain += [
-                self.counter.eq(0),
-                self.output.eq(self.running_sum + self.input),
-                self.running_sum.eq(0)
-            ]
-        with m.Else():
-            domain += [
-                self.counter.eq(self.counter + 1),
-                self.running_sum.eq(self.running_sum + self.input)
-            ]
-
-        return m
-
 class BLERadio(Elaboratable):
     def __init__(self):
         self.serdes = get_serdes_implementation()()
@@ -109,23 +80,12 @@ class BLERadio(Elaboratable):
             lowMag.inputQ.eq(lpfLowQ.output),
         ]
 
-        m.submodules.decimator = decimator = SimpleDecimator(decimation_factor=4,domain="rxdiv4")
-        m.d.comb += decimator.input.eq(highMag.magnitude - lowMag.magnitude)
-
         # Finally, compare the two magnitudes
         # (We need to pipeline this a bit to meet timing)
-        lowMagOut = Signal(32)
-        highMagOut = Signal(32)
-        basebandFast = Signal()
+        diff = Signal(signed(32))
         baseband = Signal()
-        m.d.rxdiv4 += [
-            lowMagOut.eq(lowMag.magnitude),
-            highMagOut.eq(highMag.magnitude),
-            basebandFast.eq(lowMagOut > highMagOut)
-        ]
-        m.d.sync += [
-            baseband.eq(decimator.output > 0)
-        ]
+        m.d.rxdiv4 += diff.eq(highMag.magnitude - lowMag.magnitude)
+        m.d.sync += baseband.eq(diff > 0)
 
         # Synchronize by looking for the start of an advertizing packet
         pattern = [
