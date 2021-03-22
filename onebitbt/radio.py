@@ -1,6 +1,6 @@
 import sys
 
-from nmigen import Elaboratable, Module, Memory, Signal, ClockSignal
+from nmigen import Elaboratable, Module, Memory, Signal, ClockSignal, signed
 from nmigen.build import Resource, Pins, Attrs
 
 from alldigitalradio.io.generic_serdes import get_serdes_implementation
@@ -18,6 +18,35 @@ from serialcommander.uart import UART
 from serialcommander.commander import Commander
 from serialcommander.printer import TextMemoryPrinter, BinarySignalPrinter, BinaryMemoryPrinter
 from serialcommander.toggler import Toggler
+
+class SimpleDecimator(Elaboratable):
+    def __init__(self, decimation_factor=None, max_val=20, domain="sync"):
+        self.decimation_factor = decimation_factor
+        self.domain = domain
+
+        self.input = Signal(signed(14))
+        self.output = Signal(signed(20))
+
+        self.running_sum = Signal(signed(20))
+        self.counter = Signal(signed(8))
+
+    def elaborate(self, platform):
+        m = Module()
+
+        domain = getattr(m.d, self.domain)
+        with m.If(self.counter == self.decimation_factor - 1):
+            domain += [
+                self.counter.eq(0),
+                self.output.eq(self.running_sum + self.input),
+                self.running_sum.eq(0)
+            ]
+        with m.Else():
+            domain += [
+                self.counter.eq(self.counter + 1),
+                self.running_sum.eq(self.running_sum + self.input)
+            ]
+
+        return m
 
 class BLERadio(Elaboratable):
     def __init__(self):
@@ -80,6 +109,9 @@ class BLERadio(Elaboratable):
             lowMag.inputQ.eq(lpfLowQ.output),
         ]
 
+        m.submodules.decimator = decimator = SimpleDecimator(decimation_factor=4,domain="rxdiv4")
+        m.d.comb += decimator.input.eq(highMag.magnitude - lowMag.magnitude)
+
         # Finally, compare the two magnitudes
         # (We need to pipeline this a bit to meet timing)
         lowMagOut = Signal(32)
@@ -92,7 +124,7 @@ class BLERadio(Elaboratable):
             basebandFast.eq(lowMagOut > highMagOut)
         ]
         m.d.sync += [
-            baseband.eq(basebandFast)
+            baseband.eq(decimator.output > 0)
         ]
 
         # Synchronize by looking for the start of an advertizing packet
@@ -138,10 +170,19 @@ class BLERadio(Elaboratable):
                 '3': BinaryMemoryPrinter(analyzer, width, 1024),
             })
             if platform:
-                m.d.comb += platform.request('led').eq(toggler.output)
+                m.d.comb += [
+                    platform.request('led').eq(toggler.output),
+                    platform.request('debug1').eq(baseband),
+                    platform.request('debug2').eq(synchronizer.matcher.match)
+                ]
 
         return m
 
 if __name__ == '__main__':
     with hardware.use(sys.argv[1]) as platform:
+        from nmigen.build import Resource, Pins, Attrs
+        platform.resources += [
+                Resource('debug1', 0, Pins("M16", dir="o"), Attrs(IOSTANDARD="LVCMOS33")),
+                Resource('debug2', 0, Pins("M17", dir="o"), Attrs(IOSTANDARD="LVCMOS33")),
+        ]
         platform().build(BLERadio(), do_program=True)

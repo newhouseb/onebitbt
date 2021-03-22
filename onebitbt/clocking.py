@@ -20,7 +20,6 @@ class ClockDivider4(Elaboratable):
 
             return m
 
-
         m = Module()
 
         clkin = Signal() # Buffered output of input clock, into PLL
