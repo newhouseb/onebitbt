@@ -1,6 +1,6 @@
 # onebitbt - A Bluetooth Low Energy Radio using SERDES as a 1-bit ADC/DAC
 
-This is a proof-of-concept Bluetooth receiver that can receive bluetooth (advertising) packets using an FPGA and an antenna -- no ADC, filters, mixers, AGC or even amplifiers required. Just straight RF into a SERDES port sampling at 5Ghz. It's written in nmigen, but can be compiled to verilog for usage elsewhere.
+This is a proof-of-concept Bluetooth receiver that can receive bluetooth (advertising) packets using an FPGA and an antenna -- no ADC, filters, mixers, AGC or even amplifiers required. Just straight RF into a SERDES port sampling at 5Ghz. It's written in [nmigen](https://github.com/nmigen/nmigen), but can be compiled to verilog for usage elsewhere.
 
 # ...why?
 
@@ -73,13 +73,36 @@ But you don't have to read all this prose, to explain (some of this) I've writte
 - [Detection](https://github.com/newhouseb/onebitbt/blob/master/research/Detection.ipynb) - (Covers) modulation and demodulation  of the waveform to bits, as well as an evaluation of the demodulation performance versus more traditional methods.
 - [Parsing](https://github.com/newhouseb/onebitbt/blob/master/research/Parsing.ipynb) - Dewhitening, parsing and checking the bits for correctness.
 
-For non-Bluetooth specific radio building blocks, you can refer to the notebooks in the https://github.com/newhouseb/alldigitalradio repository:
+For non-Bluetooth specific radio building blocks, you can refer to the notebooks in the [alldigitalradio](https://github.com/newhouseb/alldigitalradio) repository:
 
 - [Downconversion](https://github.com/newhouseb/alldigitalradio/blob/main/research/Downconversion.ipynb) - Conversion from a carrier-modulated signal to baseband (with 1-bit signals)
 - [Filtering](https://github.com/newhouseb/alldigitalradio/blob/main/research/Filtering.ipynb) - Comically simple filtering.
 - [Synchronization](https://github.com/newhouseb/alldigitalradio/blob/main/research/Synchronization.ipynb) - Symbol synchronization.
 - [Trigonometry](https://github.com/newhouseb/alldigitalradio/blob/main/research/Trigonometry.ipynb) - Computing the magnitude of a complext signal.
 - [Shift Registers](https://github.com/newhouseb/alldigitalradio/blob/main/research/ShiftRegisters.ipynb) - Shift registers underpinning whitening and CRC checking.
+
+# FAQ
+
+## How good is this radio?
+
+Honestly, it's not fantastic, but this isn't because of the precision, rather because I'm demodulating GMSK as if it was FSK.
+
+![image](https://user-images.githubusercontent.com/77915/112077627-4c162c00-8b53-11eb-93d1-ed6dd9bcaf4b.png)
+
+- Blue - Traditional demodulation (read: taking the derivative of the phase of the baseband signal)
+- Orange - Traditional demoduation of a signal rounded to -1 and 1
+- Green - FSK demodulation in simulated hardware
+- Red - FSK demodulation in numpy.
+
+Once I implement CORDIC to estimate the phase, we should get performance closer to the more traditional implementations.
+
+## What about the transmitter?
+
+I've built [a transmitter](https://twitter.com/newhouseb/status/1352796299700162560) as well, but the interest in the receive was far greater so I've started there. Will integrate the transmitter here in due time.
+
+## Something is incorrect!
+
+Please let me know! Twitter (@newhouseb) or GitHub is fine. I've been engineering in a cave and have no professional experience in this space, so I'm sure there are errors in addition to random bugs.
 
 # System Diagram
 ```
