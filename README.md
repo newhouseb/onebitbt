@@ -85,9 +85,9 @@ For non-Bluetooth specific radio building blocks, you can refer to the notebooks
 
 ## How good is this radio?
 
-Honestly, it's not fantastic, but this isn't because of the precision, rather because I'm demodulating GMSK as if it was FSK.
+Honestly, it's not fantastic, but this less because of the precision, and more because I'm demodulating GMSK as if it was FSK.
 
-![image](https://user-images.githubusercontent.com/77915/112077627-4c162c00-8b53-11eb-93d1-ed6dd9bcaf4b.png)
+![image](https://user-images.githubusercontent.com/77915/112078403-bc717d00-8b54-11eb-9dae-d8c1e3ef7766.png)
 
 - Blue - Traditional demodulation (read: taking the derivative of the phase of the baseband signal)
 - Orange - Traditional demoduation of a signal rounded to -1 and 1
@@ -99,6 +99,12 @@ Once I implement CORDIC to estimate the phase, we should get performance closer 
 ## What about the transmitter?
 
 I've built [a transmitter](https://twitter.com/newhouseb/status/1352796299700162560) as well, but the interest in the receive was far greater so I've started there. Will integrate the transmitter here in due time.
+
+## Can I run this on my hardware?
+
+If you're using a Xilinx platform with a GTP SERDES block (read: Xilinx 7-Series Artix parts) then yes, without much pain. Other Xilinx parts should be doable, provided you initialize the SERDES transceiver using the right magic.
+
+I wish so much that this would work on a Lattice platform but there's no easy way to get Lattice SERDES blocks to lock to a reference rather than the incoming data. By setting a register, you can theoretically tell it to lock to the clock reference, but realistically it just instead runs RX clocked by an unstable ring oscillator. Now that I've got this all working on Xilinx, perhaps I can get back to trying to get this to work on Lattice parts.
 
 ## Something is incorrect!
 
@@ -237,3 +243,10 @@ Please let me know! Twitter (@newhouseb) or GitHub is fine. I've been engineerin
 
                                     Output
 ```
+
+# Credits & Citations
+
+- I couldn't have grokked real bluetooth packets without the help of JiaoXianjun's [BTLE](https://github.com/JiaoXianjun/BTLE) repository and the following presentation entitled [All BLE guides are wrong including this one](https://inst.eecs.berkeley.edu/~ee290c/sp18/lec/Lecture7A.pdf).
+- The following PhD theses that turned me on to using SERDES as a transmitter/receiver:
+  -  [Enhanced and Disruptive Radio-Frequency Receivers](https://ria.ua.pt/bitstream/10773/24801/1/tese.pdf) by André Isidoro Prata.
+  -  [Novel Architectures for Flexible and Wideband All-digital Transmitters](https://ria.ua.pt/bitstream/10773/23875/1/Documento.pdf) by Rui Fiel Cordeiro
