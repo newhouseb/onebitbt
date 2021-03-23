@@ -108,6 +108,10 @@ If you're using a Xilinx platform with a GTP SERDES block (read: Xilinx 7-Series
 
 I wish so much that this would work on a Lattice platform but there's no easy way to get Lattice SERDES blocks to lock to a reference rather than the incoming data. By setting a register, you can theoretically tell it to lock to the clock reference, but realistically it just instead runs RX clocked by an unstable ring oscillator. Now that I've got this all working on Xilinx, perhaps I can get back to trying to get this to work on Lattice parts.
 
+## Why didn't you do the parsing in software?
+
+That would be the long-term correct thing to do but I value a quick feedback loop and simplicity while debugging so it made sense to build a quick and dirty parser purely in gateware.
+
 ## Something is incorrect!
 
 Please let me know! Twitter (@newhouseb) or GitHub is fine. I've been engineering in a cave and have no professional experience in this space, so I'm sure there are errors in addition to random bugs.
