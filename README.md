@@ -87,7 +87,7 @@ For non-Bluetooth specific radio building blocks, you can refer to the notebooks
 
 ## How good is this radio?
 
-Honestly, it's not fantastic, but this less because of the precision, and more because I'm demodulating GMSK as if it was FSK.
+Honestly, it's not fantastic, but this less because of the precision, and more because I'm demodulating GMSK as if it was FSK (because it was quicker/easier to implement).
 
 ![image](https://user-images.githubusercontent.com/77915/112078403-bc717d00-8b54-11eb-9dae-d8c1e3ef7766.png)
 
