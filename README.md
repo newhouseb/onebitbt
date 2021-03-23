@@ -1,6 +1,6 @@
 # onebitbt - A Bluetooth Low Energy Radio using FPGA SERDES as a 1-bit ADC/DAC
 
-This is a proof-of-concept Bluetooth receiver that can receive bluetooth (advertising) packets using an FPGA and an antenna -- no ADC, filters, mixers, AGC or even amplifiers required. Just straight RF into a SERDES port sampling at 5Ghz. It's written in the [nmigen](https://github.com/nmigen/nmigen) HDL targeting FPGAs.
+This is a proof-of-concept Bluetooth receiver that can receive bluetooth (advertising) packets using an FPGA and an antenna: **no ADC, filters, mixers, AGC or amplifiers required**. Just straight RF into a SERDES port sampling at 5Ghz. It's written in the [nmigen](https://github.com/nmigen/nmigen) HDL targeting FPGAs.
 
 ![image](https://user-images.githubusercontent.com/77915/112079534-b8465f00-8b56-11eb-8ce4-5dc0ac5732c2.png)
 
