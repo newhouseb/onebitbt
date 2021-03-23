@@ -10,9 +10,9 @@ I wanted to prove to myself that I knew enough about RF to interface with a devi
 
 1. There's generally one dominant modulation type used (GMSK) as compared to a bajillion for the various 802.11/WiFi standards.
 2. In the default case, there's no forward error correction, so I wouldn't have to write a viterbi decoder or anything like it in hardware.
-3. I have multiple decives that can easily transmit or receive bluetooth packets.
+3. I have multiple devices that can easily transmit or receive bluetooth packets.
 
-I could use one of the many SDRs I own, combined with GNURadio to write a packet parser but SDRs generally have built-in (configurable) direct conversion front-ends which take care of much of the "hard" parts of building a radio (read: the analog bits, which are quite finnicky). Assembling a circuit that had all the necessary mixers, amplifiers, oscillators seemed like a lot of work. After reading 30+ papers and PhD theses I hyopthesized I could do without all of this. To my surprise, this hypothesis was correct!
+I could use one of the many SDRs I own, combined with GNURadio to write a packet parser but SDRs generally have built-in (configurable) direct conversion front-ends which take care of much of the "hard" parts of building a radio (read: the analog bits, which are quite finnicky). Assembling a circuit that had all the necessary mixers, amplifiers, oscillators seemed like a lot of work. After reading 30+ papers and PhD theses I hypothesized I could do without all of this. To my surprise, this hypothesis was correct!
 
 # How do I run this?
 
@@ -23,7 +23,7 @@ pip install git+https://github.com/nmigen/nmigen
 pip install git+https://github.com/newhouseb/serialcommander
 pip install git+https://github.com/newhouseb/alldigitalradio
 ```
-Next, clone this repository. 
+Next, clone this repository.
 
 ## Running on simulated hardware
 
@@ -72,7 +72,7 @@ So if we can sample a waveform at 1-bit of precision at 5Ghz then we can do all 
 
 But you don't have to read all this prose, to explain (some of this) I've written a number of python notebooks that walk through the "research"
 
-- [Detection](https://github.com/newhouseb/onebitbt/blob/master/research/Detection.ipynb) - (Covers) modulation and demodulation  of the waveform to bits, as well as an evaluation of the demodulation performance versus more traditional methods.
+- [Detection](https://github.com/newhouseb/onebitbt/blob/master/research/Detection.ipynb) - (Covers) modulation and demodulation of the waveform to bits, as well as an evaluation of the demodulation performance versus more traditional methods.
 - [Parsing](https://github.com/newhouseb/onebitbt/blob/master/research/Parsing.ipynb) - Dewhitening, parsing and checking the bits for correctness.
 
 For non-Bluetooth specific radio building blocks, you can refer to the notebooks in the [alldigitalradio](https://github.com/newhouseb/alldigitalradio) repository:
