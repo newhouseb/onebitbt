@@ -10,9 +10,9 @@ I wanted to prove to myself that I knew enough about RF to interface with a devi
 
 1. There's generally one dominant modulation type used (GMSK) as compared to a bajillion for the various 802.11/WiFi standards.
 2. In the default case, there's no forward error correction, so I wouldn't have to write a viterbi decoder or anything like it in hardware.
-3. I have multiple decives that can easily transmit or receive bluetooth packets.
+3. I have multiple devices that can easily transmit or receive bluetooth packets.
 
-I could use one of the many SDRs I own, combined with GNURadio to write a packet parser but SDRs generally have built-in (configurable) direct conversion front-ends which take care of much of the "hard" parts of building a radio (read: the analog bits, which are quite finnicky). Assembling a circuit that had all the necessary mixers, amplifiers, oscillators seemed like a lot of work. After reading 30+ papers and PhD theses I hyopthesized I could do without all of this. To my surprise, this hypothesis was correct!
+I could use one of the many SDRs I own, combined with GNURadio to write a packet parser but SDRs generally have built-in (configurable) direct conversion front-ends which take care of much of the "hard" parts of building a radio (read: the analog bits, which are quite finnicky). Assembling a circuit that had all the necessary mixers, amplifiers, oscillators seemed like a lot of work. After reading 30+ papers and PhD theses I hypothesized I could do without all of this. To my surprise, this hypothesis was correct!
 
 # How do I run this?
 
@@ -23,7 +23,7 @@ pip install git+https://github.com/nmigen/nmigen
 pip install git+https://github.com/newhouseb/serialcommander
 pip install git+https://github.com/newhouseb/alldigitalradio
 ```
-Next, clone this repository. 
+Next, clone this repository.
 
 ## Running on simulated hardware
 
@@ -72,7 +72,7 @@ So if we can sample a waveform at 1-bit of precision at 5Ghz then we can do all 
 
 But you don't have to read all this prose, to explain (some of this) I've written a number of python notebooks that walk through the "research"
 
-- [Detection](https://github.com/newhouseb/onebitbt/blob/master/research/Detection.ipynb) - (Covers) modulation and demodulation  of the waveform to bits, as well as an evaluation of the demodulation performance versus more traditional methods.
+- [Detection](https://github.com/newhouseb/onebitbt/blob/master/research/Detection.ipynb) - (Covers) modulation and demodulation of the waveform to bits, as well as an evaluation of the demodulation performance versus more traditional methods.
 - [Parsing](https://github.com/newhouseb/onebitbt/blob/master/research/Parsing.ipynb) - Dewhitening, parsing and checking the bits for correctness.
 
 For non-Bluetooth specific radio building blocks, you can refer to the notebooks in the [alldigitalradio](https://github.com/newhouseb/alldigitalradio) repository:
@@ -87,7 +87,7 @@ For non-Bluetooth specific radio building blocks, you can refer to the notebooks
 
 ## How good is this radio?
 
-Honestly, it's not fantastic, but this less because of the precision, and more because I'm demodulating GMSK as if it was FSK (because it was quicker/easier to implement).
+Honestly, it's not fantastic, but this is less because of the precision, and more because I'm demodulating GMSK as if it was FSK (because it was quicker/easier to implement).
 
 ![image](https://user-images.githubusercontent.com/77915/112078403-bc717d00-8b54-11eb-9dae-d8c1e3ef7766.png)
 
@@ -107,6 +107,10 @@ I've built [a transmitter](https://twitter.com/newhouseb/status/1352796299700162
 If you're using a Xilinx platform with a GTP SERDES block (read: Xilinx 7-Series Artix parts) then yes, without much pain. Other Xilinx parts should be doable, provided you initialize the SERDES transceiver using the right magic.
 
 I wish so much that this would work on a Lattice platform but there's no easy way to get Lattice SERDES blocks to lock to a reference rather than the incoming data. By setting a register, you can theoretically tell it to lock to the clock reference, but realistically it just instead runs RX clocked by an unstable ring oscillator. Now that I've got this all working on Xilinx, perhaps I can get back to trying to get this to work on Lattice parts.
+
+## Why didn't you do the parsing in software?
+
+That would be the long-term correct thing to do but I value a quick feedback loop and simplicity while debugging so it made sense to build a quick and dirty parser purely in gateware.
 
 ## Something is incorrect!
 
