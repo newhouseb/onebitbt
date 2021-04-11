@@ -60,7 +60,7 @@ I LOVE MINDY
 
 If you don't have anything advertising and you have an iPhone you can download an app called "BLE Scanner" that has an "Advertiser" tab that allows your phone to advertise a bunch of random things.
 
-If you're like to transmit, you can instead run
+If you'd like to transmit, you can instead run
 ```
 python -m onebitbt.advertiser te0714
 ```
