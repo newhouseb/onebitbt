@@ -102,8 +102,8 @@ class Reference120MhzClock(Elaboratable):
         #     = 120MHz
 
         m.submodules.clockdiv = Instance("PLLE2_ADV", 
-            p_BANDWIDTH="OPTIMIZED",
-            p_COMPENSATION="ZHOLD",
+            p_BANDWIDTH="LOW",
+            p_COMPENSATION="BUFIN",
             p_STARTUP_WAIT="FALSE",
             p_DIVCLK_DIVIDE=5,
             p_CLKFBOUT_MULT=48,
