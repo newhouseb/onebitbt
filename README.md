@@ -60,6 +60,13 @@ I LOVE MINDY
 
 If you don't have anything advertising and you have an iPhone you can download an app called "BLE Scanner" that has an "Advertiser" tab that allows your phone to advertise a bunch of random things.
 
+If you're like to transmit, you can instead run
+```
+python -m onebitbt.advertiser te0714
+```
+
+And then use the aforementioned app to look for a device named "I LOVE MINDY." I can usually pick up signal close to the device with no antenna attached, but if you plan to attach an antenna please add a bandpass filter to avoid cluttering up the RF spectrum.
+
 # How does this work?
 
 The chief realization here is that there are a large class of commonly used wireless protocols that encode their data in the phase/frequency of a radio wave, and _not_ the amplitude. Modulation types that fall into this include: BPSK, QPSK, FSK, GMSK and others which are used in things like (low-end) Wi-Fi, bluetooth, LoRa. If you don't need to measure the amplitude, then all you need to measure is when the radio waveform crosses zero. 
